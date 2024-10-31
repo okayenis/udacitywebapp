@@ -34,21 +34,11 @@ stages:
             workingDirectory: $(projectRoot)
             displayName: "myStep 1"
           
-          - script: |
-              export PATH=$HOME/.local/bin:$PATH
-              make install
-            workingDirectory: $(projectRoot)
-            displayName: 'myStep 2'
-
           - task: ArchiveFiles@2
-            displayName: "myStep 2 - Archive files"
             inputs:
-              rootFolderOrFile: "$(projectRoot)"
-              includeRootFolder: false
-              archiveType: zip
-              archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+              rootFolderOrFile: '$(Build.BinariesDirectory)'
+              includeRootFolder: true
+              archiveType: 'zip'
+              archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
               replaceExistingArchive: true
-
-          - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
-            displayName: "myStep 5 - Upload package"
-            artifact: drop
+          
