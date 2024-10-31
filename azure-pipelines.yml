@@ -8,11 +8,33 @@ trigger:
 
 pool: myAgentPool
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+variables: 
+  azureServiceConnectionId: 'myServiceConnection'
+  webAppName: 'myappenis12'
+  projectRoot: $(System.DefaultWorkingDirectory)
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+stages:
+  - stage: Build
+    displayName: Build stage
+    jobs:
+    - job: Build
+      pool: myAgentPool
+      steps:
+        - script: |
+            export PATH=$HOME/.local/bin:$PATH
+            python3 -m pip install -r requirements.txt
+          workingDirectory: $(projectRoot)
+          displayName: 'Step - Install requiremets'
+
+        - task: ArchiveFiles@2
+          displayName: 'Step - ArchiveFiles'
+          inputs:
+            rootFolderOrFile: '$(projectRoot)'
+            includeRootFolder: false
+            archiveType: 'zip'
+            archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+            replaceExistingArchive: true  
+          
+        - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+          displayName: 'Step - Upload Artifact'
+          artifact: drop  
