@@ -33,6 +33,12 @@ stages:
               python3 -m pip install -r requirements.txt
             workingDirectory: $(projectRoot)
             displayName: "myStep 1"
+          
+          - script: |
+              export PATH=$HOME/.local/bin:$PATH
+              make install
+            workingDirectory: $(projectRoot)
+            displayName: 'myStep 2'
 
           - task: ArchiveFiles@2
             displayName: "myStep 2 - Archive files"
